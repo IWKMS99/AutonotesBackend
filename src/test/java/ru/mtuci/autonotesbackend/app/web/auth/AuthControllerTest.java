@@ -56,7 +56,10 @@ class AuthControllerTest extends BaseIntegrationTest {
     @Test
     void register_whenUsernameAlreadyExists_shouldReturnConflict() throws Exception {
         // Arrange
-        userRepository.save(User.builder().username("existinguser").email("exists@example.com").password("hashed").build());
+        userRepository.save(User.builder()
+                .username("existinguser")
+                .email("exists@example.com")
+                .password("hashed").build());
         RegistrationRequestDto requestDto = RegistrationRequestDto.builder()
                 .username("existinguser")
                 .email("new@example.com")

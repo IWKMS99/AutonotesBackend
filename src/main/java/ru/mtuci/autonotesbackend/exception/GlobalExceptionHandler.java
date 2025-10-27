@@ -44,37 +44,43 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
         log.warn("Authentication failed: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        return createErrorResponse(HttpStatus.UNAUTHORIZED,
+                "Invalid username or password");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseDto> handleAccessDenied(AccessDeniedException ex) {
         log.warn("Access Denied: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
+        return createErrorResponse(HttpStatus.FORBIDDEN,
+                "You do not have permission to access this resource");
     }
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorResponseDto> handleJwtException(JwtException ex) {
         log.warn("JWT processing error: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+        return createErrorResponse(HttpStatus.UNAUTHORIZED,
+                "Invalid or expired token");
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Data integrity violation: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.CONFLICT, "A user with the given username or email already exists.");
+        return createErrorResponse(HttpStatus.CONFLICT,
+                "A user with the given username or email already exists.");
     }
 
     @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<ErrorResponseDto> handleInsufficientAuthentication(InsufficientAuthenticationException ex) {
         log.warn("Authentication required: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Full authentication is required to access this resource");
+        return createErrorResponse(HttpStatus.UNAUTHORIZED,
+                "Full authentication is required to access this resource");
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllUncaughtException(Exception ex) {
         log.error("Unhandled exception occurred", ex);
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please contact support.");
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected error occurred. Please contact support.");
     }
 
     private ResponseEntity<ErrorResponseDto> createErrorResponse(HttpStatus status, String message) {

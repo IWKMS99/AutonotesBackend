@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +18,17 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
+    private final Clock clock;
+
     @Value("${JWT_SECRET}")
     private String jwtSecret;
 
     @Value("${JWT_EXPIRATION_MS}")
     private long jwtExpirationMs;
+
+    public JwtService(Clock clock) {
+        this.clock = clock;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -37,11 +44,12 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        long now = clock.millis();
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .issuedAt(new Date(now))
+                .expiration(new Date(now + jwtExpirationMs))
                 .signWith(getSignInKey())
                 .compact();
     }

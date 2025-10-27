@@ -2,6 +2,9 @@ package ru.mtuci.autonotesbackend.app.web.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.mtuci.autonotesbackend.BaseIntegrationTest;
@@ -9,6 +12,10 @@ import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.RegistrationRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.impl.domain.User;
 import ru.mtuci.autonotesbackend.modules.user.impl.repository.UserRepository;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -135,5 +142,27 @@ class AuthControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
                 .andExpect(jsonPath("$.message").value("Invalid or expired token"));
+    }
+
+    @Test
+    void login_whenUserNotFound_shouldReturnUnauthorized() throws Exception {
+        AuthRequestDto requestDto = AuthRequestDto.builder()
+                .username("nonexistentuser")
+                .password("anypassword")
+                .build();
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @TestConfiguration
+    static class TestClockConfiguration {
+        @Bean
+        @Primary
+        public Clock testClock() {
+            return Clock.fixed(Instant.parse("2024-01-01T10:00:00Z"), ZoneId.of("UTC"));
+        }
     }
 }

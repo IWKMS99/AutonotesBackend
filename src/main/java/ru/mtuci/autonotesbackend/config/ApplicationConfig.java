@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.mtuci.autonotesbackend.modules.user.impl.repository.UserRepository;
 import ru.mtuci.autonotesbackend.security.SecurityUser;
 
+import java.time.Clock;
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
@@ -43,5 +45,10 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -62,6 +63,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Data integrity violation: {}", ex.getMessage());
         return createErrorResponse(HttpStatus.CONFLICT, "A user with the given username or email already exists.");
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleInsufficientAuthentication(InsufficientAuthenticationException ex) {
+        log.warn("Authentication required: {}", ex.getMessage());
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Full authentication is required to access this resource");
     }
 
     @ExceptionHandler(Exception.class)

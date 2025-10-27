@@ -20,7 +20,7 @@ public interface AuthResource {
             summary = "Регистрация нового пользователя",
             description = "Создает нового пользователя в системе и возвращает JWT токен для дальнейшей работы.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован",
+                    @ApiResponse(responseCode = "201", description = "Пользователь успешно создан",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponseDto.class))),
                     @ApiResponse(responseCode = "400", description = "Ошибка валидации данных (например, короткий пароль или невалидный email)",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),

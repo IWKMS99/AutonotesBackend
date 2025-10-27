@@ -6,13 +6,16 @@ import ru.mtuci.autonotesbackend.modules.user.api.UserApi;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthResponseDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.RegistrationRequestDto;
+import ru.mtuci.autonotesbackend.modules.user.api.dto.UserProfileDto;
 import ru.mtuci.autonotesbackend.modules.user.impl.service.AuthService;
+import ru.mtuci.autonotesbackend.modules.user.impl.service.ProfileService;
 
 @Component
 @RequiredArgsConstructor
 public class UserApiImpl implements UserApi {
 
     private final AuthService authService;
+    private final ProfileService profileService;
 
     @Override
     public AuthResponseDto register(RegistrationRequestDto request) {
@@ -22,5 +25,10 @@ public class UserApiImpl implements UserApi {
     @Override
     public AuthResponseDto login(AuthRequestDto request) {
         return authService.login(request);
+    }
+
+    @Override
+    public UserProfileDto getProfile(String username) {
+        return profileService.getProfileByUsername(username);
     }
 }

@@ -48,4 +48,11 @@ public class NoteFacadeImpl implements NoteFacade {
         LectureNote note = noteService.findByIdAndUserId(noteId, userId);
         return noteMapper.toDetailDto(note);
     }
+
+    @Override
+    @Transactional
+    public void deleteNote(Long noteId, Long userId) {
+        String filePath = noteService.deleteByIdAndUserId(noteId, userId);
+        fileStorageFacade.delete(filePath);
+    }
 }

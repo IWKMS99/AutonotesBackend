@@ -112,4 +112,24 @@ public interface NoteResource {
     ResponseEntity<NoteDetailDto> getNoteById(
             @Parameter(description = "ID конспекта", required = true, example = "42") @PathVariable Long id,
             @Parameter(hidden = true) SecurityUser securityUser);
+
+    @Operation(
+            summary = "Удалить конспект",
+            description = "Удаляет конспект по его ID, а также связанный с ним файл из хранилища. "
+                    + "Доступ разрешен только владельцу конспекта.",
+            responses = {
+                @ApiResponse(responseCode = "204", description = "Конспект успешно удален."),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Пользователь не аутентифицирован.",
+                        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Конспект не найден или принадлежит другому пользователю.",
+                        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+            })
+    ResponseEntity<Void> deleteNote(
+            @Parameter(description = "ID конспекта для удаления", required = true, example = "42") @PathVariable
+                    Long id,
+            @Parameter(hidden = true) SecurityUser securityUser);
 }

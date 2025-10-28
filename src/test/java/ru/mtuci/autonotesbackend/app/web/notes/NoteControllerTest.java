@@ -5,6 +5,10 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -214,6 +219,66 @@ class NoteControllerTest extends BaseIntegrationTest {
         mockMvc.perform(get("/api/v1/notes")).andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void deleteNote_whenOwner_shouldDeleteNoteAndFile() throws Exception {
+        // Arrange
+        User user = createUserInDb("delete-user", "delete@test.com");
+        LectureNote note = createNoteInDb("Note to Delete", "delete-user/to-be-deleted.jpg", user);
+        String token = loginAndGetToken("delete-user");
+
+        // Act
+        mockMvc.perform(delete("/api/v1/notes/" + note.getId()).header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        // Assert - DB Check
+        assertThat(noteRepository.findById(note.getId())).isEmpty();
+
+        // Assert - MinIO Check
+        ArgumentCaptor<DeleteObjectRequest> captor = ArgumentCaptor.forClass(DeleteObjectRequest.class);
+        verify(s3Client, times(1)).deleteObject(captor.capture());
+
+        DeleteObjectRequest capturedRequest = captor.getValue();
+        assertThat(capturedRequest.bucket()).isEqualTo(testBucketName);
+        assertThat(capturedRequest.key()).isEqualTo("delete-user/to-be-deleted.jpg");
+    }
+
+    @Test
+    void deleteNote_whenNotOwner_shouldReturnNotFound() throws Exception {
+        // Arrange
+        User owner = createUserInDb("owner", "owner@test.com");
+        User attacker = createUserInDb("attacker", "attacker@test.com");
+        LectureNote note = createNoteInDb("Secret Note", "owner/secret.jpg", owner);
+        String attackerToken = loginAndGetToken("attacker");
+
+        // Act & Assert
+        mockMvc.perform(delete("/api/v1/notes/" + note.getId()).header("Authorization", "Bearer " + attackerToken))
+                .andExpect(status().isNotFound());
+
+        // Assert - DB and MinIO state unchanged
+        assertThat(noteRepository.findById(note.getId())).isPresent();
+        verify(s3Client, never()).deleteObject(any(DeleteObjectRequest.class));
+    }
+
+    @Test
+    void deleteNote_whenNoteNotFound_shouldReturnNotFound() throws Exception {
+        // Arrange
+        String token = loginAndGetToken("any-user", true);
+
+        // Act & Assert
+        mockMvc.perform(delete("/api/v1/notes/99999").header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteNote_whenUnauthenticated_shouldReturnUnauthorized() throws Exception {
+        // Arrange
+        User user = createUserInDb("some-user", "some@test.com");
+        LectureNote note = createNoteInDb("Some Note", "some-user/file.jpg", user);
+
+        // Act & Assert
+        mockMvc.perform(delete("/api/v1/notes/" + note.getId())).andExpect(status().isUnauthorized());
+    }
+
     private User createUserInDb(String username, String email) {
         return userRepository.save(User.builder()
                 .username(username)
@@ -245,8 +310,8 @@ class NoteControllerTest extends BaseIntegrationTest {
         return noteRepository.findById(noteId).orElseThrow().getFileStoragePath();
     }
 
-    private void createNoteInDb(String title, String filePath, User user) {
-        noteRepository.save(LectureNote.builder()
+    private LectureNote createNoteInDb(String title, String filePath, User user) {
+        return noteRepository.save(LectureNote.builder()
                 .title(title)
                 .user(user)
                 .originalFileName("test.jpg")

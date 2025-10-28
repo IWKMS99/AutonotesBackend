@@ -11,4 +11,6 @@ public interface NoteFacade {
     List<NoteDto> findAllUserNotes(Long userId);
 
     NoteDetailDto getNoteById(Long noteId, Long userId);
+
+    void deleteNote(Long noteId, Long userId);
 }

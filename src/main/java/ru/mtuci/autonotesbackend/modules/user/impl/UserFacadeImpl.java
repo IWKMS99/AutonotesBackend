@@ -2,7 +2,7 @@ package ru.mtuci.autonotesbackend.modules.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.mtuci.autonotesbackend.modules.user.api.UserApi;
+import ru.mtuci.autonotesbackend.modules.user.api.UserFacade;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthResponseDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.RegistrationRequestDto;
@@ -12,7 +12,7 @@ import ru.mtuci.autonotesbackend.modules.user.impl.service.ProfileService;
 
 @Component
 @RequiredArgsConstructor
-public class UserApiImpl implements UserApi {
+public class UserFacadeImpl implements UserFacade {
 
     private final AuthService authService;
     private final ProfileService profileService;

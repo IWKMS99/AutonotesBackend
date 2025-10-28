@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mtuci.autonotesbackend.modules.user.api.UserApi;
+import ru.mtuci.autonotesbackend.modules.user.api.UserFacade;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.UserProfileDto;
 
 @RestController
@@ -15,7 +15,7 @@ import ru.mtuci.autonotesbackend.modules.user.api.dto.UserProfileDto;
 @RequiredArgsConstructor
 public class UserController implements UserResource {
 
-    private final UserApi userApi;
+    private final UserFacade userApi;
 
     @Override
     @GetMapping("/{username}")

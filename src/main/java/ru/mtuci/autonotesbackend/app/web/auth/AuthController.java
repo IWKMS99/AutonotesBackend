@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.mtuci.autonotesbackend.modules.user.api.UserApi;
+import ru.mtuci.autonotesbackend.modules.user.api.UserFacade;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthResponseDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.RegistrationRequestDto;
@@ -20,7 +20,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class AuthController implements AuthResource {
 
-    private final UserApi userApi;
+    private final UserFacade userApi;
 
     @Override
     @PostMapping("/register")

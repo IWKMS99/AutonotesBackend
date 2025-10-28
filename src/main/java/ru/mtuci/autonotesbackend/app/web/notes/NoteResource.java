@@ -2,6 +2,7 @@ package ru.mtuci.autonotesbackend.app.web.notes;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -76,11 +77,18 @@ public interface NoteResource {
             responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "Список конспектов успешно получен (может быть пустым)."),
+                        description = "Список конспектов успешно получен (может быть пустым).",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        array = @ArraySchema(schema = @Schema(implementation = NoteDto.class)))),
                 @ApiResponse(
                         responseCode = "401",
                         description = "Пользователь не аутентифицирован",
-                        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class)))
             })
     ResponseEntity<List<NoteDto>> getAllNotes(@Parameter(hidden = true) SecurityUser securityUser);
 }

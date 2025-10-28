@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.mtuci.autonotesbackend.modules.filestorage.api.FileStorageFacade;
 import ru.mtuci.autonotesbackend.modules.notes.api.NoteFacade;
+import ru.mtuci.autonotesbackend.modules.notes.api.dto.NoteDetailDto;
 import ru.mtuci.autonotesbackend.modules.notes.api.dto.NoteDto;
 import ru.mtuci.autonotesbackend.modules.notes.impl.domain.LectureNote;
 import ru.mtuci.autonotesbackend.modules.notes.impl.mapper.NoteMapper;
@@ -40,5 +41,11 @@ public class NoteFacadeImpl implements NoteFacade {
     public List<NoteDto> findAllUserNotes(Long userId) {
         List<LectureNote> notes = noteService.findAllByUserId(userId);
         return noteMapper.toDtoList(notes);
+    }
+
+    @Override
+    public NoteDetailDto getNoteById(Long noteId, Long userId) {
+        LectureNote note = noteService.findByIdAndUserId(noteId, userId);
+        return noteMapper.toDetailDto(note);
     }
 }

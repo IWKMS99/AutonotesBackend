@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.mtuci.autonotesbackend.exception.ResourceNotFoundException;
 import ru.mtuci.autonotesbackend.modules.notes.impl.domain.LectureNote;
 import ru.mtuci.autonotesbackend.modules.notes.impl.domain.NoteStatus;
 import ru.mtuci.autonotesbackend.modules.notes.impl.repository.LectureNoteRepository;
@@ -36,5 +37,12 @@ public class NoteService {
     @Transactional(readOnly = true)
     public List<LectureNote> findAllByUserId(Long userId) {
         return noteRepository.findByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public LectureNote findByIdAndUserId(Long noteId, Long userId) {
+        return noteRepository
+                .findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
     }
 }

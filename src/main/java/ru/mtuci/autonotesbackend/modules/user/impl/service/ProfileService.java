@@ -17,7 +17,8 @@ public class ProfileService {
     private final UserMapper userMapper;
 
     public UserProfileDto getProfileByUsername(String username) {
-        return userRepository.findByUsername(username)
+        return userRepository
+                .findByUsername(username)
                 .map(userMapper::toProfileDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }

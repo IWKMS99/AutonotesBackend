@@ -1,5 +1,10 @@
 package ru.mtuci.autonotesbackend.modules.filestorage.impl.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,11 +19,6 @@ import ru.mtuci.autonotesbackend.modules.filestorage.api.exception.FileStorageEx
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileStorageServiceTest {
@@ -79,7 +79,8 @@ class FileStorageServiceTest {
                 .deleteObject(any(DeleteObjectRequest.class));
 
         // Act & Assert
-        FileStorageException exception = assertThrows(FileStorageException.class, () -> fileStorageService.delete(filePath));
+        FileStorageException exception =
+                assertThrows(FileStorageException.class, () -> fileStorageService.delete(filePath));
 
         assertThat(exception.getMessage()).isEqualTo("Failed to delete file: " + filePath);
         assertThat(exception.getCause()).isInstanceOf(SdkException.class);

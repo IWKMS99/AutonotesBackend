@@ -1,10 +1,9 @@
 package ru.mtuci.autonotesbackend.modules.notes.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.OffsetDateTime;
 import lombok.Data;
 import ru.mtuci.autonotesbackend.modules.notes.impl.domain.NoteStatus;
-
-import java.time.OffsetDateTime;
 
 @Data
 @Schema(description = "Краткая информация о конспекте")

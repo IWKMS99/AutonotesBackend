@@ -20,52 +20,51 @@ public interface NoteResource {
 
     @Operation(
             summary = "Загрузить новый конспект",
-            description = "Загружает файл (изображение) и заголовок, создавая новую запись о конспекте" +
-                    " со статусом PROCESSING. Запрос должен быть типа `multipart/form-data`.",
+            description = "Загружает файл (изображение) и заголовок, создавая новую запись о конспекте"
+                    + " со статусом PROCESSING. Запрос должен быть типа `multipart/form-data`.",
             responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "Конспект успешно создан и поставлен в очередь на обработку",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = NoteDto.class))),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Некорректный запрос (например, отсутствует файл или заголовок)",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class))),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Пользователь не аутентифицирован",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class))),
-                    @ApiResponse(
-                            responseCode = "503",
-                            description = "Сервис хранения файлов недоступен",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class)))
-            }
-    )
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "Конспект успешно создан и поставлен в очередь на обработку",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = NoteDto.class))),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Некорректный запрос (например, отсутствует файл или заголовок)",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Пользователь не аутентифицирован",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class))),
+                @ApiResponse(
+                        responseCode = "503",
+                        description = "Сервис хранения файлов недоступен",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class)))
+            })
     ResponseEntity<NoteDto> uploadNote(
             @Parameter(
-                    name = "title",
-                    description = "Заголовок конспекта.",
-                    required = true,
-                    schema = @Schema(type = "string"),
-                    example = "Лекция по Дискретной Математике"
-            ) String title,
-
+                            name = "title",
+                            description = "Заголовок конспекта.",
+                            required = true,
+                            schema = @Schema(type = "string"),
+                            example = "Лекция по Дискретной Математике")
+                    String title,
             @Parameter(
-                    name = "file",
-                    description = "Файл изображения конспекта для распознавания.",
-                    required = true,
-                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-            ) MultipartFile file,
-
-            @Parameter(hidden = true)
-            SecurityUser securityUser
-    );
+                            name = "file",
+                            description = "Файл изображения конспекта для распознавания.",
+                            required = true,
+                            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+                    MultipartFile file,
+            @Parameter(hidden = true) SecurityUser securityUser);
 }

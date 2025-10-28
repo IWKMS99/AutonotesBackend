@@ -1,5 +1,8 @@
 package ru.mtuci.autonotesbackend.modules.notes.impl;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,14 +12,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import ru.mtuci.autonotesbackend.modules.filestorage.api.FileStorageFacade;
 import ru.mtuci.autonotesbackend.modules.notes.impl.service.NoteService;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class NoteFacadeImplTest {
 
     @Mock
     private NoteService noteService;
+
     @Mock
     private FileStorageFacade fileStorageFacade;
 
@@ -26,12 +27,7 @@ class NoteFacadeImplTest {
     @Test
     void createNote_whenDbSaveFails_shouldCallFileDelete() {
         // Arrange
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "test.txt",
-                "text/plain",
-                "content".getBytes()
-        );
+        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
         String title = "Test Title";
         Long userId = 1L;
         String filePath = "1/some-uuid.txt";

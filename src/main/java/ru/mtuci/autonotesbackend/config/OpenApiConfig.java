@@ -11,12 +11,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(
-                title = "Autonotes API",
-                description = "API для сервиса автоматического конспектирования лекций.",
-                version = "1.0.0"
-        )
-)
+        info =
+                @Info(
+                        title = "Autonotes API",
+                        description = "API для сервиса автоматического конспектирования лекций.",
+                        version = "1.0.0"))
 public class OpenApiConfig {
 
     private static final String SECURITY_SCHEME_NAME = "bearerAuth";
@@ -24,8 +23,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .components(new Components()
-                        .addSecuritySchemes(SECURITY_SCHEME_NAME, createBearerAuthScheme()))
+                .components(new Components().addSecuritySchemes(SECURITY_SCHEME_NAME, createBearerAuthScheme()))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME));
     }
 

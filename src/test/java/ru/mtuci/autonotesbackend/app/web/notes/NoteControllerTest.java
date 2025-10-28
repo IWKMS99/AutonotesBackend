@@ -1,5 +1,15 @@
 package ru.mtuci.autonotesbackend.app.web.notes;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,28 +35,22 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 class NoteControllerTest extends BaseIntegrationTest {
 
     private final List<String> uploadedFilePaths = new ArrayList<>();
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private LectureNoteRepository noteRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @MockitoBean
     private S3Client s3Client;
+
     @Value("${aws.s3.bucket}")
     private String testBucketName;
 
@@ -71,9 +75,8 @@ class NoteControllerTest extends BaseIntegrationTest {
         User user = createUserInDb("note-user", "note@test.com");
         String token = loginAndGetToken();
 
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "hello.jpg", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes()
-        );
+        MockMultipartFile file =
+                new MockMultipartFile("file", "hello.jpg", MediaType.IMAGE_JPEG_VALUE, "Hello, World!".getBytes());
         MockPart titlePart = new MockPart("title", "My First Lecture".getBytes());
 
         // Act
@@ -107,18 +110,11 @@ class NoteControllerTest extends BaseIntegrationTest {
 
     @Test
     void uploadNote_whenUnauthenticated_shouldReturnUnauthorized() throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "test.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "content".getBytes()
-        );
+        MockMultipartFile file =
+                new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "content".getBytes());
         MockPart titlePart = new MockPart("title", "some title".getBytes());
 
-        mockMvc.perform(multipart("/api/v1/notes")
-                        .file(file)
-                        .part(titlePart))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(multipart("/api/v1/notes").file(file).part(titlePart)).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -126,21 +122,15 @@ class NoteControllerTest extends BaseIntegrationTest {
         String token = loginAndGetToken("test-user", true);
         MockPart titlePart = new MockPart("title", "some title".getBytes());
 
-        mockMvc.perform(multipart("/api/v1/notes")
-                        .part(titlePart)
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(multipart("/api/v1/notes").part(titlePart).header("Authorization", "Bearer " + token))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void uploadNote_withEmptyFile_shouldReturnServiceUnavailable() throws Exception {
         String token = loginAndGetToken("test-user", true);
-        MockMultipartFile emptyFile = new MockMultipartFile(
-                "file",
-                "empty.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                new byte[0]
-        );
+        MockMultipartFile emptyFile =
+                new MockMultipartFile("file", "empty.txt", MediaType.TEXT_PLAIN_VALUE, new byte[0]);
         MockPart titlePart = new MockPart("title", "Empty File Test".getBytes());
 
         mockMvc.perform(multipart("/api/v1/notes")
@@ -155,9 +145,8 @@ class NoteControllerTest extends BaseIntegrationTest {
         // Arrange
         String token = loginAndGetToken("fail-user", true);
 
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "fail.jpg", MediaType.IMAGE_JPEG_VALUE, "content".getBytes()
-        );
+        MockMultipartFile file =
+                new MockMultipartFile("file", "fail.jpg", MediaType.IMAGE_JPEG_VALUE, "content".getBytes());
         MockPart titlePart = new MockPart("title", "Failing Upload".getBytes());
 
         doThrow(SdkException.builder().message("MinIO is down").build())
@@ -170,8 +159,7 @@ class NoteControllerTest extends BaseIntegrationTest {
                         .part(titlePart)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isServiceUnavailable())
-                .andExpect(jsonPath("$.message")
-                        .value("File storage service is currently unavailable."));
+                .andExpect(jsonPath("$.message").value("File storage service is currently unavailable."));
     }
 
     private User createUserInDb(String username, String email) {

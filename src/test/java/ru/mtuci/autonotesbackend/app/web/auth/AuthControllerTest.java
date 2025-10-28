@@ -1,5 +1,14 @@
 package ru.mtuci.autonotesbackend.app.web.auth;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -12,16 +21,6 @@ import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.RegistrationRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.impl.domain.User;
 import ru.mtuci.autonotesbackend.modules.user.impl.repository.UserRepository;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AuthControllerTest extends BaseIntegrationTest {
 
@@ -50,7 +49,8 @@ class AuthControllerTest extends BaseIntegrationTest {
         // Verify user in DB
         User savedUser = userRepository.findByUsername("testuser").orElseThrow();
         assertThat(savedUser.getEmail()).isEqualTo("test@example.com");
-        assertThat(passwordEncoder.matches("password123", savedUser.getPassword())).isTrue();
+        assertThat(passwordEncoder.matches("password123", savedUser.getPassword()))
+                .isTrue();
     }
 
     @Test
@@ -59,7 +59,8 @@ class AuthControllerTest extends BaseIntegrationTest {
         userRepository.save(User.builder()
                 .username("existinguser")
                 .email("exists@example.com")
-                .password("hashed").build());
+                .password("hashed")
+                .build());
         RegistrationRequestDto requestDto = RegistrationRequestDto.builder()
                 .username("existinguser")
                 .email("new@example.com")
@@ -140,8 +141,7 @@ class AuthControllerTest extends BaseIntegrationTest {
     void requestWithInvalidToken_shouldReturnUnauthorized() throws Exception {
         String invalidToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0In0.invalid-signature";
 
-        mockMvc.perform(get("/api/v1/some-protected-endpoint")
-                        .header("Authorization", invalidToken))
+        mockMvc.perform(get("/api/v1/some-protected-endpoint").header("Authorization", invalidToken))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
                 .andExpect(jsonPath("$.message").value("Invalid or expired token"));

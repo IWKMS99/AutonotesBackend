@@ -1,6 +1,7 @@
 package ru.mtuci.autonotesbackend.exception;
 
 import io.jsonwebtoken.JwtException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import ru.mtuci.autonotesbackend.exception.dto.ErrorResponseDto;
 import ru.mtuci.autonotesbackend.modules.filestorage.api.exception.FileStorageException;
-
-import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -46,36 +45,31 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
         log.warn("Authentication failed: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.UNAUTHORIZED,
-                "Invalid username or password");
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseDto> handleAccessDenied(AccessDeniedException ex) {
         log.warn("Access Denied: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.FORBIDDEN,
-                "You do not have permission to access this resource");
+        return createErrorResponse(HttpStatus.FORBIDDEN, "You do not have permission to access this resource");
     }
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorResponseDto> handleJwtException(JwtException ex) {
         log.warn("JWT processing error: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.UNAUTHORIZED,
-                "Invalid or expired token");
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Data integrity violation: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.CONFLICT,
-                "A user with the given username or email already exists.");
+        return createErrorResponse(HttpStatus.CONFLICT, "A user with the given username or email already exists.");
     }
 
     @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<ErrorResponseDto> handleInsufficientAuthentication(InsufficientAuthenticationException ex) {
         log.warn("Authentication required: {}", ex.getMessage());
-        return createErrorResponse(HttpStatus.UNAUTHORIZED,
-                "Full authentication is required to access this resource");
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, "Full authentication is required to access this resource");
     }
 
     @ExceptionHandler(FileStorageException.class)
@@ -94,8 +88,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllUncaughtException(Exception ex) {
         log.error("Unhandled exception occurred", ex);
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected error occurred. Please contact support.");
+        return createErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please contact support.");
     }
 
     private ResponseEntity<ErrorResponseDto> createErrorResponse(HttpStatus status, String message) {

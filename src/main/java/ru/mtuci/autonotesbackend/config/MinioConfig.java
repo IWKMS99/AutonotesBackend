@@ -1,5 +1,6 @@
 package ru.mtuci.autonotesbackend.config;
 
+import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -15,8 +16,6 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
-import java.net.URI;
-
 @Slf4j
 @Configuration
 @Profile("minio-storage")
@@ -24,20 +23,23 @@ public class MinioConfig {
 
     @Value("${aws.s3.endpoint}")
     private String endpoint;
+
     @Value("${aws.s3.access-key}")
     private String accessKey;
+
     @Value("${aws.s3.secret-key}")
     private String secretKey;
+
     @Value("${aws.s3.bucket}")
     private String bucketName;
+
     @Value("${aws.s3.region}")
     private String region;
 
     @Bean
     public S3Client s3Client() {
-        S3Configuration s3Configuration = S3Configuration.builder()
-                .pathStyleAccessEnabled(true)
-                .build();
+        S3Configuration s3Configuration =
+                S3Configuration.builder().pathStyleAccessEnabled(true).build();
 
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
@@ -51,10 +53,12 @@ public class MinioConfig {
     public ApplicationRunner minioBucketInitializer(S3Client s3Client) {
         return args -> {
             try {
-                s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
+                s3Client.headBucket(
+                        HeadBucketRequest.builder().bucket(bucketName).build());
                 log.info("S3 bucket '{}' already exists.", bucketName);
             } catch (NoSuchBucketException e) {
-                s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+                s3Client.createBucket(
+                        CreateBucketRequest.builder().bucket(bucketName).build());
                 log.info("S3 bucket '{}' created successfully.", bucketName);
             } catch (Exception e) {
                 log.error("Error while initializing S3 bucket", e);

@@ -1,5 +1,6 @@
 package ru.mtuci.autonotesbackend.config;
 
+import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.mtuci.autonotesbackend.modules.user.impl.repository.UserRepository;
 import ru.mtuci.autonotesbackend.security.SecurityUser;
 
-import java.time.Clock;
-
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
@@ -24,7 +23,8 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
+        return username -> userRepository
+                .findByUsername(username)
                 .map(SecurityUser::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }

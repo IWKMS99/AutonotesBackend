@@ -18,37 +18,39 @@ public interface UserResource {
 
     @Operation(
             summary = "Получить профиль пользователя по имени",
-            description = "Возвращает публичную информацию о профиле пользователя." +
-                    " **Важно:** Пользователь может запрашивать только свой собственный профиль.",
+            description = "Возвращает публичную информацию о профиле пользователя."
+                    + " **Важно:** Пользователь может запрашивать только свой собственный профиль.",
             responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Профиль пользователя успешно получен.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = UserProfileDto.class))),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Пользователь не аутентифицирован (отсутствует или невалидный JWT токен).",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class))),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Доступ запрещен (попытка просмотра чужого профиля).",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class))),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Пользователь с указанным именем не найден.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class)))
-            }
-    )
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Профиль пользователя успешно получен.",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = UserProfileDto.class))),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Пользователь не аутентифицирован (отсутствует или невалидный JWT токен).",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class))),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "Доступ запрещен (попытка просмотра чужого профиля).",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Пользователь с указанным именем не найден.",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = ErrorResponseDto.class)))
+            })
     ResponseEntity<UserProfileDto> getProfile(
-            @Parameter(description = "Имя пользователя (username)", required = true, example = "john_doe")
-            @PathVariable String username
-    );
+            @Parameter(description = "Имя пользователя (username)", required = true, example = "john_doe") @PathVariable
+                    String username);
 }

@@ -1,12 +1,11 @@
 package ru.mtuci.autonotesbackend.modules.notes.impl.domain;
 
 import jakarta.persistence.*;
+import java.time.OffsetDateTime;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import ru.mtuci.autonotesbackend.modules.user.impl.domain.User;
-
-import java.time.OffsetDateTime;
 
 @Getter
 @Setter

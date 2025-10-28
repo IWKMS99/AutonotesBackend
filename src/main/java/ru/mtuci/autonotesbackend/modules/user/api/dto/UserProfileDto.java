@@ -1,9 +1,8 @@
 package ru.mtuci.autonotesbackend.modules.user.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
 import java.time.OffsetDateTime;
+import lombok.Data;
 
 @Data
 @Schema(description = "Профиль пользователя")

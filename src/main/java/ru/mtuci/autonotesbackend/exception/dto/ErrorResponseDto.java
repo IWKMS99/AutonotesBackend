@@ -2,11 +2,10 @@ package ru.mtuci.autonotesbackend.exception.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
-
-import java.time.OffsetDateTime;
 
 @Getter
 @Setter

@@ -8,6 +8,8 @@ import ru.mtuci.autonotesbackend.modules.user.api.dto.UserProfileDto;
 public interface UserFacade {
 
     AuthResponseDto register(RegistrationRequestDto request);
+
     AuthResponseDto login(AuthRequestDto request);
+
     UserProfileDto getProfile(String username);
 }

@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "Ответ с токеном доступа")
 public class AuthResponseDto {
-    @Schema(description = "JWT токен доступа",
-            example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTYxNjQ0NjQwMCwiZXhwIjoxNjE2NTMyODAwfQ.xyz...")
+    @Schema(
+            description = "JWT токен доступа",
+            example =
+                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTYxNjQ0NjQwMCwiZXhwIjoxNjE2NTMyODAwfQ.xyz...")
     private String token;
 }

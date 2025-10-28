@@ -1,5 +1,10 @@
 package ru.mtuci.autonotesbackend.app.web.user;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,11 +15,6 @@ import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthResponseDto;
 import ru.mtuci.autonotesbackend.modules.user.impl.domain.User;
 import ru.mtuci.autonotesbackend.modules.user.impl.repository.UserRepository;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerTest extends BaseIntegrationTest {
 
@@ -31,8 +31,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String token = loginAndGetToken("testuser");
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/users/testuser")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/users/testuser").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.email").value("test@mail.com"));
@@ -46,8 +45,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String tokenUser1 = loginAndGetToken("user1");
 
         // Act & Assert
-        mockMvc.perform(get("/api/v1/users/user2")
-                        .header("Authorization", "Bearer " + tokenUser1))
+        mockMvc.perform(get("/api/v1/users/user2").header("Authorization", "Bearer " + tokenUser1))
                 .andExpect(status().isForbidden());
     }
 

@@ -48,7 +48,7 @@ public interface UserResource {
             }
     )
     ResponseEntity<UserProfileDto> getProfile(
-            @Parameter(description = "Имя пользователя (username)", required = true, example = "myuser")
+            @Parameter(description = "Имя пользователя (username)", required = true, example = "john_doe")
             @PathVariable String username
     );
 }

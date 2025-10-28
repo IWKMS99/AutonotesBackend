@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import ru.mtuci.autonotesbackend.exception.dto.ErrorResponseDto;
 import ru.mtuci.autonotesbackend.modules.filestorage.api.exception.FileStorageException;
 
@@ -81,6 +82,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleFileStorageException(FileStorageException ex) {
         log.error("File storage error occurred", ex);
         return createErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, "File storage service is currently unavailable.");
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingServletRequestPart(MissingServletRequestPartException ex) {
+        log.warn("Missing request part: {}", ex.getMessage());
+        String message = String.format("Required part '%s' is not present.", ex.getRequestPartName());
+        return createErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(Exception.class)

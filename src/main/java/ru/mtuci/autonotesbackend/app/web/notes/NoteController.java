@@ -29,8 +29,7 @@ public class NoteController implements NoteResource {
             @RequestPart("file") MultipartFile file,
             @Parameter(hidden = true) @AuthenticationPrincipal SecurityUser securityUser) {
 
-        NoteDto createdNote =
-                noteFacade.createNote(title, file, securityUser.user().getId());
+        NoteDto createdNote = noteFacade.createNote(title, file, securityUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNote);
     }
 }

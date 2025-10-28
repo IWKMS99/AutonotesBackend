@@ -45,4 +45,12 @@ public class NoteService {
                 .findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + noteId));
     }
+
+    @Transactional
+    public String deleteByIdAndUserId(Long noteId, Long userId) {
+        LectureNote noteToDelete = findByIdAndUserId(noteId, userId);
+        String filePath = noteToDelete.getFileStoragePath();
+        noteRepository.delete(noteToDelete);
+        return filePath;
+    }
 }

@@ -1,8 +1,11 @@
 package ru.mtuci.autonotesbackend.app.web.notes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import ru.mtuci.autonotesbackend.BaseIntegrationTest;
 import ru.mtuci.autonotesbackend.modules.notes.api.dto.NoteDto;
 import ru.mtuci.autonotesbackend.modules.notes.impl.domain.LectureNote;
+import ru.mtuci.autonotesbackend.modules.notes.impl.domain.NoteStatus;
 import ru.mtuci.autonotesbackend.modules.notes.impl.repository.LectureNoteRepository;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthRequestDto;
 import ru.mtuci.autonotesbackend.modules.user.api.dto.AuthResponseDto;
@@ -162,6 +166,53 @@ class NoteControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.message").value("File storage service is currently unavailable."));
     }
 
+    @Test
+    void getAllNotes_whenAuthenticatedAndHasNotes_shouldReturnNoteList() throws Exception {
+        // Arrange
+        User user = createUserInDb("list-user", "list@test.com");
+        createNoteInDb("Math Lecture", "1/math.jpg", user);
+        createNoteInDb("History Lecture", "1/history.jpg", user);
+        String token = loginAndGetToken("list-user");
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/notes").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[*].title", containsInAnyOrder("Math Lecture", "History Lecture")))
+                .andExpect(jsonPath("$[0].userId").value(user.getId()));
+    }
+
+    @Test
+    void getAllNotes_whenAuthenticatedAndHasNoNotes_shouldReturnEmptyList() throws Exception {
+        // Arrange
+        createUserInDb("empty-user", "empty@test.com");
+        String token = loginAndGetToken("empty-user");
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/notes").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void getAllNotes_whenAuthenticated_shouldNotReturnOtherUsersNotes() throws Exception {
+        // Arrange
+        User userB = createUserInDb("userB", "b@test.com");
+        createNoteInDb("Note from User B", "b/secret.jpg", userB);
+        String tokenForUserA = loginAndGetToken("userA");
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/notes").header("Authorization", "Bearer " + tokenForUserA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void getAllNotes_whenUnauthenticated_shouldReturnUnauthorized() throws Exception {
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/notes")).andExpect(status().isUnauthorized());
+    }
+
     private User createUserInDb(String username, String email) {
         return userRepository.save(User.builder()
                 .username(username)
@@ -191,5 +242,26 @@ class NoteControllerTest extends BaseIntegrationTest {
 
     private String getFilePathFromDto(Long noteId) {
         return noteRepository.findById(noteId).orElseThrow().getFileStoragePath();
+    }
+
+    private void createNoteInDb(String title, String filePath, User user) {
+        noteRepository.save(LectureNote.builder()
+                .title(title)
+                .user(user)
+                .originalFileName("test.jpg")
+                .fileStoragePath(filePath)
+                .status(NoteStatus.COMPLETED)
+                .build());
+    }
+
+    private String loginAndGetToken(String username) throws Exception {
+        AuthRequestDto authRequest = new AuthRequestDto(username, "password123");
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseBody = result.getResponse().getContentAsString();
+        return objectMapper.readValue(responseBody, AuthResponseDto.class).getToken();
     }
 }

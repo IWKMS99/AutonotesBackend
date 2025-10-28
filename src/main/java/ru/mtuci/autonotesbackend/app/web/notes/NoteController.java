@@ -1,5 +1,6 @@
 package ru.mtuci.autonotesbackend.app.web.notes;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,7 +27,7 @@ public class NoteController implements NoteResource {
     public ResponseEntity<NoteDto> uploadNote(
             @RequestPart("title") String title,
             @RequestPart("file") MultipartFile file,
-            @AuthenticationPrincipal SecurityUser securityUser) {
+            @Parameter(hidden = true) @AuthenticationPrincipal SecurityUser securityUser) {
 
         NoteDto createdNote = noteFacade.createNote(title, file, securityUser.user().getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNote);

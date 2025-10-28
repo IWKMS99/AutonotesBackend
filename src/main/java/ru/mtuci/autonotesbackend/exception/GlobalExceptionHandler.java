@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.mtuci.autonotesbackend.exception.dto.ErrorResponseDto;
+import ru.mtuci.autonotesbackend.modules.filestorage.api.exception.FileStorageException;
 
 import java.util.stream.Collectors;
 
@@ -74,6 +75,12 @@ public class GlobalExceptionHandler {
         log.warn("Authentication required: {}", ex.getMessage());
         return createErrorResponse(HttpStatus.UNAUTHORIZED,
                 "Full authentication is required to access this resource");
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorResponseDto> handleFileStorageException(FileStorageException ex) {
+        log.error("File storage error occurred", ex);
+        return createErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, "File storage service is currently unavailable.");
     }
 
     @ExceptionHandler(Exception.class)

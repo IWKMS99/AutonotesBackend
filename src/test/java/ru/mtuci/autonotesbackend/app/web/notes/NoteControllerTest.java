@@ -197,6 +197,7 @@ class NoteControllerTest extends BaseIntegrationTest {
     @Test
     void getAllNotes_whenAuthenticated_shouldNotReturnOtherUsersNotes() throws Exception {
         // Arrange
+        User userA = createUserInDb("userA", "a@test.com");
         User userB = createUserInDb("userB", "b@test.com");
         createNoteInDb("Note from User B", "b/secret.jpg", userB);
         String tokenForUserA = loginAndGetToken("userA");

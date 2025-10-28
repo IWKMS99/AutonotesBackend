@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,4 +68,19 @@ public interface NoteResource {
                             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
                     MultipartFile file,
             @Parameter(hidden = true) SecurityUser securityUser);
+
+    @Operation(
+            summary = "Получить все конспекты пользователя",
+            description =
+                    "Возвращает список всех конспектов, принадлежащих текущему аутентифицированному пользователю.",
+            responses = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Список конспектов успешно получен (может быть пустым)."),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Пользователь не аутентифицирован",
+                        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+            })
+    ResponseEntity<List<NoteDto>> getAllNotes(@Parameter(hidden = true) SecurityUser securityUser);
 }

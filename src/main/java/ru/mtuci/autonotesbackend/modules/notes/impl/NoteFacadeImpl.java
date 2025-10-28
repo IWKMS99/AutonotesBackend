@@ -1,5 +1,6 @@
 package ru.mtuci.autonotesbackend.modules.notes.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,5 +34,11 @@ public class NoteFacadeImpl implements NoteFacade {
             fileStorageFacade.delete(filePath);
             throw e;
         }
+    }
+
+    @Override
+    public List<NoteDto> findAllUserNotes(Long userId) {
+        List<LectureNote> notes = noteService.findAllByUserId(userId);
+        return noteMapper.toDtoList(notes);
     }
 }

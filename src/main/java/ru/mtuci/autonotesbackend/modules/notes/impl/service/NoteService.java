@@ -1,5 +1,6 @@
 package ru.mtuci.autonotesbackend.modules.notes.impl.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,5 +31,10 @@ public class NoteService {
                 .build();
 
         return noteRepository.save(note);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LectureNote> findAllByUserId(Long userId) {
+        return noteRepository.findByUserId(userId);
     }
 }

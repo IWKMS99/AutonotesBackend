@@ -27,8 +27,8 @@ class UserControllerTest extends BaseIntegrationTest {
     @Test
     void getProfile_whenAuthenticated_shouldReturnOwnProfile() throws Exception {
         // Arrange
-        createUserInDb("testuser", "test@mail.com", "password123");
-        String token = loginAndGetToken("testuser", "password123");
+        createUserInDb("testuser", "test@mail.com");
+        String token = loginAndGetToken("testuser");
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/users/testuser")
@@ -41,9 +41,9 @@ class UserControllerTest extends BaseIntegrationTest {
     @Test
     void getProfile_whenRequestingOtherUsersProfile_shouldReturnForbidden() throws Exception {
         // Arrange
-        createUserInDb("user1", "user1@mail.com", "password123");
-        createUserInDb("user2", "user2@mail.com", "password123");
-        String tokenUser1 = loginAndGetToken("user1", "password123");
+        createUserInDb("user1", "user1@mail.com");
+        createUserInDb("user2", "user2@mail.com");
+        String tokenUser1 = loginAndGetToken("user1");
 
         // Act & Assert
         mockMvc.perform(get("/api/v1/users/user2")
@@ -51,16 +51,16 @@ class UserControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
-    private void createUserInDb(String username, String email, String rawPassword) {
+    private void createUserInDb(String username, String email) {
         userRepository.save(User.builder()
                 .username(username)
                 .email(email)
-                .password(passwordEncoder.encode(rawPassword))
+                .password(passwordEncoder.encode("password123"))
                 .build());
     }
 
-    private String loginAndGetToken(String username, String password) throws Exception {
-        AuthRequestDto authRequest = new AuthRequestDto(username, password);
+    private String loginAndGetToken(String username) throws Exception {
+        AuthRequestDto authRequest = new AuthRequestDto(username, "password123");
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))

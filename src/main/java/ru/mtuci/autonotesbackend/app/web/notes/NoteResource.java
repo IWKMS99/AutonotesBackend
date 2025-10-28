@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import ru.mtuci.autonotesbackend.exception.dto.ErrorResponseDto;
+import ru.mtuci.autonotesbackend.modules.notes.api.dto.NoteDetailDto;
 import ru.mtuci.autonotesbackend.modules.notes.api.dto.NoteDto;
 import ru.mtuci.autonotesbackend.security.SecurityUser;
 
@@ -91,4 +93,23 @@ public interface NoteResource {
                                         schema = @Schema(implementation = ErrorResponseDto.class)))
             })
     ResponseEntity<List<NoteDto>> getAllNotes(@Parameter(hidden = true) SecurityUser securityUser);
+
+    @Operation(
+            summary = "Получить детальную информацию о конспекте",
+            description = "Возвращает полную информацию о конспекте по его ID, включая распознанный текст и саммари. "
+                    + "Доступ разрешен только владельцу конспекта.",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Информация о конспекте успешно получена."),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "Пользователь не аутентифицирован.",
+                        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Конспект не найден или принадлежит другому пользователю.",
+                        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+            })
+    ResponseEntity<NoteDetailDto> getNoteById(
+            @Parameter(description = "ID конспекта", required = true, example = "42") @PathVariable Long id,
+            @Parameter(hidden = true) SecurityUser securityUser);
 }

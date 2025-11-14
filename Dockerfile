@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-jammy as builder
+FROM eclipse-temurin:24-jdk-noble as builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN chmod +x ./gradlew
 
 RUN ./gradlew bootJar --no-daemon
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:24-jre-noble
 
 WORKDIR /app
 
